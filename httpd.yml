@@ -1,0 +1,26 @@
+---
+- name: Install apache
+  hosts: web_server
+  remote_user: ec2-user
+  become: true
+  vars:
+       mach: prod
+  tasks:
+   - name: install apache
+     yum:
+         name: httpd
+         state: latest
+   - name: Enable service
+     service:
+             name: httpd
+             state: started
+   - name: conf template
+     template:
+             src: demo.j2
+             dest: /var/www/html/demo.html
+     notify: restart httpd
+  handlers:
+   - name: restart httpd
+     service:
+             name: httpd
+             state: restarted
